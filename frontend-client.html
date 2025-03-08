@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control | Acceso Seguro</title>
+    <style>
+        :root {
+            --primary-color: #4a6cfa;
+            --text-color: #333;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --error-color: #e53e3e;
+            --success-color: #38a169;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background-color: var(--primary-color);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 250, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3a5cd8;
+        }
+        
+        button:disabled {
+            background-color: #a0aec0;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-error {
+            background-color: #fff5f5;
+            color: var(--error-color);
+            border: 1px solid #fed7d7;
+        }
+        
+        .alert-success {
+            background-color: #f0fff4;
+            color: var(--success-color);
+            border: 1px solid #c6f6d5;
+        }
+        
+        .alert-info {
+            background-color: #ebf8ff;
+            color: #2c5282;
+            border: 1px solid #bee3f8;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+        }
+        
+        .dashboard.active {
+            display: block;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .dashboard-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .dashboard-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+        }
+        
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+        
+        .logout-btn {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+        
+        .logout-btn:hover {
+            background-color: #f7fafc;
+        }
+        
+        .biometric-info {
+            font-size: 14px;
+            margin-top: 16px;
+            padding: 12px;
+            background-color: #ebf8ff;
+            border-radius: 8px;
+            border: 1px solid #bee3f8;
+            color: #2c5282;
+        }
+        
+        .biometric-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .biometric-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Loader */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mensajes de alerta -->
+    <div id="alertContainer" class="hidden alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; min-width: 300px;"></div>
+    
+    <!-- Login Container -->
+    <div class="container" id="loginContainer">
+        <div class="card">
+            <div class="logo">
+                <div class="logo-icon">S</div>
+            </div>
+            <h1>Bienvenido</h1>
+            
+            <div id="loginError" class="alert alert-error hidden">
+                Credenciales incorrectas. Inténtalo de nuevo.
+            </div>
+            
+            <div id="biometricLoginArea" class="hidden">
+                <button id="loginWithBiometric" class="biometric-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 11c0 3.76-3.4 6.8-8 6.8s-8-3.04-8-6.8 3.4-6.8 8-6.8 8 3.04 8 6.8z"/>
+                        <path d="M8 11V5c0-1.1.9-2 2-2h.5"/>
+                        <path d="M17.8 15.817a7 7 0 0 0 0-9.9l-.9.8a6 6 0 0 1 0 8.3l.9.8z"/>
+                        <path d="M14.5 12.5a3 3 0 0 0 0-3l-.9.8a2 2 0 0 1 0 1.4l.9.8z"/>
+                    </svg>
+                    Iniciar sesión con huella digital
+                </button>
+                <p style="text-align: center; margin-top: 10px; font-size: 14px;">- o -</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" placeholder="Ingresa tu usuario" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+                
+                <button type="submit" id="loginButton">Iniciar sesión</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Dashboard Container -->
+    <div class="container dashboard" id="dashboardContainer" style="display: none;">
+        <div class="dashboard-header">
+            <h2 class="dashboard-title">Panel de control</h2>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3 class="dashboard-card-title">Configuración de seguridad</h3>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Activar autenticación biométrica</span>
+                <label class="toggle">
+                    <input type="checkbox" id="biometricToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div id="biometricStatus" class="hidden biometric-info">
+                <!-- El estado se actualizará dinámicamente -->
+            </div>
+            
+            <div id="biometricProcessing" class="loader-container hidden">
+                <div class="loader"></div>
+                <span style="margin-left: 10px;">Procesando...</span>
+            </div>
+        </div>
+        
+        <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
+    </div>
+
+    <!-- Importar SimpleWebAuthn desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@simplewebauthn/browser/dist/bundle/starter.min.js"></script>
+    
+    <script>
+        // Estado de la aplicación
+        const appState = {
+            isLoggedIn: false,
+            biometricEnabled: false,
+            username: null,
+            currentUser: null
+        };
+        
+        // Elementos del DOM
+        const loginContainer = document.getElementById('loginContainer');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const loginForm = document.getElementById('loginForm');
+        const loginButton = document.getElementById('loginButton');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const biometricToggle = document.getElementById('biometricToggle');
+        const biometricStatus = document.getElementById('biometricStatus');
+        const biometricProcessing = document.getElementById('biometricProcessing');
+        const biometricLoginArea = document.getElementById('biometricLoginArea');
+        const loginWithBiometric = document.getElementById('loginWithBiometric');
+        const usernameInput = document.getElementById('username');
+        const alertContainer = document.getElementById('alertContainer');
+        
+        // Funciones auxiliares
+        function showAlert(message, type = 'error') {
+            alertContainer.textContent = message;
+            alertContainer.className = `alert alert-${type}`;
+            alertContainer.classList.remove('hidden');
+            
+            setTimeout(() => {
+                alertContainer.classList.add('hidden');
+            }, 5000);
+        }
+        
+        function setLoading(isLoading, button, originalText) {
+            if (isLoading) {
+                button.disabled = true;
+                button.textContent = 'Procesando...';
+            } else {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+        
+        // Comprobar si WebAuthn está disponible
+        function isWebAuthnSupported() {
+            try {
+                return typeof PublicKeyCredential !== 'undefined';
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Comprobar si Biometría está disponible en este dispositivo
+        async function isBiometricAvailable() {
+            try {
+                if (!isWebAuthnSupported()) return false;
+                
+                // Verificar si hay plataforma biométrica disponible
+                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                return available;
+            } catch (e) {
+                console.error('Error al verificar disponibilidad biométrica:', e);
+                return false;
+            }
+        }
+        
+        // Función para mostrar el panel de control
+        function showDashboard() {
+            loginContainer.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+        }
+        
+        // Función para mostrar el login
+        function showLogin() {
+            dashboardContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+        }
+        
+        // Verificar el estado de la sesión al cargar la página
+        async function checkSession() {
+            try {
+                const response = await fetch('/api/webauthn/status', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    appState.biometricEnabled = data.hasBiometrics;
+                    biometricToggle.checked = data.hasBiometrics;
+                    
+                    if (data.hasBiometrics) {
+                        biometricStatus.textContent = 'La autenticación biométrica está activada.';
+                        biometricStatus.classList.remove('hidden');
+                    }
+                    
+                    showDashboard();
+                } else {
+                    // No hay sesión, mostrar login
+                    showLogin();
+                }
+            } catch (error) {
+                console.error('Error al verificar sesión:', error);
+                showLogin();
+            }
+        }
+        
+        // Comprobar disponibilidad de autenticación biométrica
+        async function checkBiometricAvailability() {
+            const biometricsAvailable = await isBiometricAvailable();
+            
+            if (!biometricsAvailable) {
+                biometricToggle.disabled = true;
+                biometricToggle.title = 'Tu dispositivo no soporta autenticación biométrica';
+                biometricStatus.textContent = 'Tu dispositivo no soporta autenticación biométrica.';
+                biometricStatus.classList.remove('hidden');
+            }
+            
+            return biometricsAvailable;
+        }
+        
+        // Comprobar si el usuario tiene credenciales biométricas registradas
+        async function checkBiometricCredentials(username) {
+            try {
+                const response = await fetch(`/api/webauthn/auth-options?username=${username}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error al verificar credenciales biométricas:', error);
+                return false;
+            }
+        }
+        
+        // Registrar nueva credencial biométrica
+        async function registerBiometricCredential() {
+            biometricProcessing.classList.remove('hidden');
+            biometricToggle.disabled = true;
+            
+            try {
+                // 1. Obtener opciones de registro desde el servidor
+                const optionsResponse = await fetch('/api/webauthn/register-options', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!optionsResponse.ok) {
+                    throw new Error('Error al obtener opciones de registro');
+                }
+                
+                const options = await optionsResponse.json();
+                
+                // 2. Crear credencial con API del navegador
+                const credential = await SimpleWebAuthnBrowser.startRegistration(options);
+                
+                // 3. Enviar credencial al servidor para verificación
+                const verificationResponse = await fetch('/api/webauthn/register-verification', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(credential)
+                });
+                
+                if (!verificationResponse.ok) {
+                    throw new Error('Error en la verificación de la credencial');
+                }
+                
+                const verification = await verificationResponse.json();
+                
+                if (verification.success) {
+                    biometricStatus.textContent = 'La autenticación biométrica ha sido activada correctamente.';
+                    biometricStatus.classList.remove('hidden');
+                    appState.biometricEnabled = true;
+                    showAlert('Autenticación biométrica activada correctamente', 'success');
+                    return true;
+                } else {
+                    throw new Error('Verificación fallida');
+                }
+            } catch (error) {
+                console.error('Error al registrar credencial biométrica:', error);
+                showAlert('Error al registrar la huella digital: ' + error.message);
+                biometricToggle.checked = false;
+                appState.biometricEnabled = false;
+                return false;
+            } finally {
+                biometricProcessing
